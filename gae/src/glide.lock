@@ -1,0 +1,27 @@
+hash: f21bac673f26cd68211805e51cfe298d6821e433fed61a2d1cb5a74022810ac4
+updated: 2016-11-15T20:02:19.47247755-08:00
+imports:
+- name: github.com/golang/protobuf
+  version: 4a5b3fd3082794b57dadf9f962fffa5ecad974d5
+  subpackages:
+  - proto
+- name: github.com/gorilla/context
+  version: 08b5f424b9271eedf6f9f0ce86cb9396ed337a42
+- name: github.com/gorilla/mux
+  version: 0eeaf8392f5b04950925b8a69fe70f110fa7cbfc
+- name: golang.org/x/net
+  version: e57319ce2bbbdc638169d4756554fbaedc805399
+  subpackages:
+  - context
+- name: google.golang.org/appengine
+  version: 150dc57a1b433e64154302bdc40b6bb8aefa313a
+  subpackages:
+  - datastore
+  - internal
+  - internal/app_identity
+  - internal/base
+  - internal/datastore
+  - internal/log
+  - internal/modules
+  - internal/remote_api
+testImports: []
