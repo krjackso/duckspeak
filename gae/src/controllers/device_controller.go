@@ -8,8 +8,6 @@ import (
 	"models"
 )
 
-type DeviceController struct{}
-
 type NewDeviceRequest struct {
 	DeviceType string `json:"deviceType"`
 }
@@ -18,7 +16,7 @@ type NewDeviceResponse struct {
 	DeviceId string `json:"deviceId"`
 }
 
-func (self *DeviceController) NewDevice(w http.ResponseWriter, r *http.Request) {
+func NewDevice(w http.ResponseWriter, r *http.Request) {
 	var requestData NewDeviceRequest
 	if err := parseJson(r, &requestData); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -42,7 +40,7 @@ func (self *DeviceController) NewDevice(w http.ResponseWriter, r *http.Request) 
 	response := &NewDeviceResponse{
 		DeviceId: device.Id,
 	}
-	jsonResponse(w, response, http.StatusTeapot)
+	jsonResponse(w, response, http.StatusCreated)
 }
 
 func validateDeviceType(deviceType string) bool {

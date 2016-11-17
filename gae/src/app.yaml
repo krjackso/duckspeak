@@ -23,6 +23,8 @@ automatic_scaling:
 
 env_variables:
   API_BASE: "https://duckspeakapp.appspot.com"
+  AUTH_ISSUER: "https://duckspeakapp.com"
+  AUTH_SECRET: "699b636c8387a3b79ad42c57241872115e13d0d6ce12614eef3cf581b3733dba6e946733cdd85c32"
 
 skip_files:
 - ^(.*/)?#.*#$

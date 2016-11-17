@@ -9,13 +9,14 @@ type BootstrapController struct {
 }
 
 type BootstrapResponse struct {
-	NewDevice string `json:"newDevice"`
-	GetTopic  string `json:"getTopic"`
+	NewDevice   string `json:"newDevice"`
+	RefreshAuth string `json:"refreshAuth"`
 }
 
 func (self *BootstrapController) Bootstrap(w http.ResponseWriter, r *http.Request) {
 	response := &BootstrapResponse{
-		NewDevice: self.Router.GetHref("newDevice"),
+		NewDevice:   self.Router.GetHref(r, "newDevice"),
+		RefreshAuth: self.Router.GetHref(r, "refreshAuth"),
 	}
-	jsonResponse(w, response, http.StatusTeapot)
+	jsonResponse(w, response, http.StatusOK)
 }
