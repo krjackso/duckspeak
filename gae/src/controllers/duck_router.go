@@ -8,16 +8,16 @@ import (
 )
 
 type DuckRouter struct {
-	ApiBase string
-	Router  *mux.Router
+	HttpScheme string
+	Router     *mux.Router
 }
 
-func NewDuckRouter(apiBase string, authenticator *auth.Authenticator) *DuckRouter {
-	gorilla := mux.NewRouter().Host("{host}").Schemes("{scheme:https?}").Subrouter()
+func NewDuckRouter(httpScheme string, authenticator *auth.Authenticator) *DuckRouter {
+	gorilla := mux.NewRouter().Host("{host:.*}").Schemes("{scheme}").Subrouter()
 
 	r := &DuckRouter{
-		ApiBase: apiBase,
-		Router:  gorilla,
+		HttpScheme: httpScheme,
+		Router:     gorilla,
 	}
 
 	bootstrapController := &BootstrapController{
@@ -37,10 +37,11 @@ func NewDuckRouter(apiBase string, authenticator *auth.Authenticator) *DuckRoute
 
 func (self *DuckRouter) GetHref(r *http.Request, name string) string {
 	host := r.Host
-	scheme := r.URL.Scheme
-	path, err := self.Router.Get(name).URL("host", host, "scheme", scheme)
+	path, err := self.Router.Get(name).URL("host", host)
 	if err != nil {
 		panic(err)
 	}
+
+	path.Scheme = self.HttpScheme
 	return path.String()
 }

@@ -1,6 +1,7 @@
 package duckspeak
 
 import (
+	"google.golang.org/appengine"
 	"net/http"
 	"os"
 
@@ -9,13 +10,10 @@ import (
 )
 
 func init() {
-	apiBase := os.Getenv("API_BASE")
 	authIssuer := os.Getenv("AUTH_ISSUER")
 	authSecret := os.Getenv("AUTH_SECRET")
 
 	switch "" {
-	case apiBase:
-		fallthrough
 	case authIssuer:
 		fallthrough
 	case authSecret:
@@ -23,7 +21,17 @@ func init() {
 	}
 
 	authenticator := auth.NewAuthenticator(authIssuer, authSecret)
-	duck := controllers.NewDuckRouter(apiBase, authenticator)
+
+	httpScheme := determineHttpScheme()
+	duck := controllers.NewDuckRouter(httpScheme, authenticator)
 
 	http.Handle("/", duck.Router)
+}
+
+func determineHttpScheme() string {
+	if appengine.IsDevAppServer() {
+		return "http"
+	} else {
+		return "https"
+	}
 }
