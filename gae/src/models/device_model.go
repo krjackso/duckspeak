@@ -1,19 +1,25 @@
 package models
 
 import (
+	uuid "github.com/satori/go.uuid"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/datastore"
 	"time"
 )
 
 type Device struct {
-	Id      int64 `datastore:"-"`
+	Id      string `datastore:"-"`
 	Created time.Time
 	Type    string
 }
 
+func deviceKey(ctx context.Context, deviceId string) *datastore.Key {
+	return datastore.NewKey(ctx, "Device", deviceId, 0, nil)
+}
+
 func NewDevice(ctx context.Context, deviceType string) (*Device, error) {
-	key := datastore.NewIncompleteKey(ctx, "Device", nil)
+	newId := uuid.NewV4().String()
+	key := deviceKey(ctx, newId)
 
 	device := &Device{
 		Type:    deviceType,
@@ -25,6 +31,6 @@ func NewDevice(ctx context.Context, deviceType string) (*Device, error) {
 		return nil, err
 	}
 
-	device.Id = key.IntID()
+	device.Id = key.StringID()
 	return device, nil
 }

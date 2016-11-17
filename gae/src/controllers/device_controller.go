@@ -15,7 +15,7 @@ type NewDeviceRequest struct {
 }
 
 type NewDeviceResponse struct {
-	DeviceId int64 `json:"deviceId"`
+	DeviceId string `json:"deviceId"`
 }
 
 func (self *DeviceController) NewDevice(w http.ResponseWriter, r *http.Request) {
