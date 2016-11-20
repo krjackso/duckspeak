@@ -41,6 +41,7 @@ func NewDevice(ctx context.Context, deviceType string) (*Device, error) {
 	key := deviceKey(ctx, newId)
 
 	device := &Device{
+		Id:      newId,
 		Type:    deviceType,
 		Created: time.Now().UTC(),
 	}
@@ -50,6 +51,5 @@ func NewDevice(ctx context.Context, deviceType string) (*Device, error) {
 		return nil, err
 	}
 
-	device.Id = key.StringID()
 	return device, nil
 }

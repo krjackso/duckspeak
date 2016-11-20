@@ -7,8 +7,9 @@ import (
 )
 
 const (
-	jwtAccessExpire   = 60 * time.Minute
-	jwtAccessAudience = "self"
+	jwtAccessExpire = 60 * time.Minute
+	AccessAudience  = "self"
+	AdminAudience   = "admin"
 )
 
 type IAuthenticator interface {
@@ -28,13 +29,13 @@ func NewAuthenticator(issuer, secret string) *Authenticator {
 	}
 }
 
-func (self *Authenticator) NewAccessToken(deviceId string) (token string, expiresIn int64) {
+func (self *Authenticator) NewToken(deviceId, audience string) (token string, expiresIn int64) {
 	expiresAt := time.Now().Add(jwtAccessExpire).Unix()
 
 	claims := &jwt.StandardClaims{
 		Issuer:    self.issuer,
 		IssuedAt:  time.Now().Unix(),
-		Audience:  jwtAccessAudience,
+		Audience:  audience,
 		Subject:   deviceId,
 		ExpiresAt: expiresAt,
 	}
@@ -48,7 +49,7 @@ func (self *Authenticator) NewAccessToken(deviceId string) (token string, expire
 	return token, int64(jwtAccessExpire.Seconds())
 }
 
-func (self *Authenticator) VerifyAccessToken(tokenString string) (deviceId string, ok bool) {
+func (self *Authenticator) VerifyToken(tokenString, audience string) (deviceId string, ok bool) {
 	token, err := jwt.ParseWithClaims(tokenString, &jwt.StandardClaims{}, func(token *jwt.Token) (interface{}, error) {
 		if token.Method.Alg() != jwt.SigningMethodHS256.Alg() {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
@@ -69,7 +70,7 @@ func (self *Authenticator) VerifyAccessToken(tokenString string) (deviceId strin
 		return "", false
 	}
 
-	if !claims.VerifyAudience(jwtAccessAudience, true) {
+	if !claims.VerifyAudience(audience, true) {
 		return "", false
 	}
 

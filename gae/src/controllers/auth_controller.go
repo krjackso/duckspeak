@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"google.golang.org/appengine"
+	"google.golang.org/appengine/user"
 	"net/http"
 
 	"models"
@@ -41,13 +42,38 @@ func (self *AuthController) RefreshAuth(w http.ResponseWriter, r *http.Request) 
 	}
 
 	if device == nil {
-		http.Error(w, "", http.StatusNotFound)
+		http.Error(w, "", http.StatusUnauthorized)
 		return
 	}
 
-	token, expiresIn := self.Authenticator.NewAccessToken(device.Id)
+	token, expiresIn := self.Authenticator.NewToken(device.Id, auth.AccessAudience)
 
 	response := &RefreshAuthResponse{
+		AccessToken: token,
+		ExpiresIn:   expiresIn,
+	}
+	jsonResponse(w, response, http.StatusOK)
+}
+
+type AdminAuthResponse struct {
+	Email       string `json:"email"`
+	AccessToken string `json:"accessToken"`
+	ExpiresIn   int64  `json:"expiresIn"`
+}
+
+func (self *AuthController) AdminAuth(w http.ResponseWriter, r *http.Request) {
+	ctx := appengine.NewContext(r)
+
+	adminUser := user.Current(ctx)
+	if adminUser == nil || !adminUser.Admin {
+		http.Error(w, "", http.StatusForbidden)
+		return
+	}
+
+	token, expiresIn := self.Authenticator.NewToken(adminUser.Email, auth.AdminAudience)
+
+	response := &AdminAuthResponse{
+		Email:       adminUser.Email,
 		AccessToken: token,
 		ExpiresIn:   expiresIn,
 	}
